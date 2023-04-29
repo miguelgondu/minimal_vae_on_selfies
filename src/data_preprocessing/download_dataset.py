@@ -9,6 +9,7 @@ See this answer in Cheminformatics StackExchange for more details:
 https://chemistry.stackexchange.com/a/122118
 """
 from pathlib import Path
+import gzip
 
 import urllib.request
 
@@ -29,3 +30,12 @@ if __name__ == "__main__":
         "ftp://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Extras/CID-SMILES.gz",
         DATA_PATH / "CID-SMILES.gz",
     )
+
+    # Unzipping the dataset
+    # if the user wants
+    print("Unzipping...")
+    yes_no = input("Do you want to unzip the dataset? [y/(n)] ")
+    if yes_no.lower() == "y":
+        with gzip.open(DATA_PATH / "CID-SMILES.gz", "rb") as f_in:
+            with open(DATA_PATH / "CID-SMILES", "wb") as f_out:
+                f_out.write(f_in.read())

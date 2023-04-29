@@ -61,20 +61,10 @@ if __name__ == "__main__":
             # Merging the chunk with the current dataset
             print("Merging the chunk with the current dataset...")
             os.system(
-                f"cat {PROCESSED_DATA_PATH / ('CID-SELFIES-' + str(i))} >> {PROCESSED_DATA_PATH / 'CID-SELFIES'}"
+                f"cat {PROCESSED_DATA_PATH / ('CID-SELFIES-' + str(i))} "
+                f">> {PROCESSED_DATA_PATH / 'CID-SELFIES'}"
             )
             os.system(
                 f"rm {PROCESSED_DATA_PATH / ('CID-SELFIES-' + str(i))}"
             )
-
-        
-    # Merging the chunks using the command line
-    print("Merging the chunks...")
-    os.system(
-        f"cat {PROCESSED_DATA_PATH / 'CID-SELFIES-*'} > {PROCESSED_DATA_PATH / 'CID-SELFIES'}"
-    )
-
-    # Removing the chunks
-    print("Removing the chunks...")
-    os.system(f"rm {PROCESSED_DATA_PATH / 'CID-SELFIES-*'}")
 

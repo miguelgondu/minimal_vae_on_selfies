@@ -11,11 +11,13 @@ from selfies import encoder, EncoderError
 
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 
+
 def encode_if_possible(smiles: str) -> str:
     try:
         return encoder(smiles)
     except EncoderError:
         return pd.NA
+
 
 def process_chuck(chunk: pd.DataFrame) -> pd.DataFrame:
     """
@@ -29,6 +31,7 @@ def process_chuck(chunk: pd.DataFrame) -> pd.DataFrame:
     chunk.drop(columns=[1], inplace=True)
     chunk.dropna(inplace=True)
     return chunk
+
 
 if __name__ == "__main__":
     # Making sure the file exists
@@ -58,13 +61,10 @@ if __name__ == "__main__":
                 header=False,
                 index=False,
             )
+
             # Merging the chunk with the current dataset
-            print("Merging the chunk with the current dataset...")
             os.system(
                 f"cat {PROCESSED_DATA_PATH / ('CID-SELFIES-' + str(i))} "
                 f">> {PROCESSED_DATA_PATH / 'CID-SELFIES'}"
             )
-            os.system(
-                f"rm {PROCESSED_DATA_PATH / ('CID-SELFIES-' + str(i))}"
-            )
-
+            os.system(f"rm {PROCESSED_DATA_PATH / ('CID-SELFIES-' + str(i))}")

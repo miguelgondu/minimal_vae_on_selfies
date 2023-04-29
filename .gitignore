@@ -1,0 +1,11 @@
+.vscode/
+
+# Ignoring python-related files
+*.py[cod]
+__pycache__/
+*.so
+*.egg
+*.egg-info/
+
+# Ignoring the dataset
+data/

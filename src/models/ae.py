@@ -18,9 +18,11 @@ class Autoencoder(torch.nn.Module):
         database_name: str = "SUPER-SMALL-CID-SELFIES",
         max_length: int = 300,
         latent_dim: int = 64,
+        device: torch.device = torch.device("cpu"),
     ):
         super().__init__()
         self.database_name = database_name
+        self.device = device
 
         # Load the token dictionary
         with open(
@@ -53,6 +55,8 @@ class Autoencoder(torch.nn.Module):
             torch.nn.Linear(1024, self.input_length),
         )
 
+        self.to(device)
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Takes a batch of SELFIES, encoded as one-hot vectors
@@ -64,7 +68,7 @@ class Autoencoder(torch.nn.Module):
         Output:
             logits_rec: torch.Tensor of shape (batch_size, length_of_sequence, n_tokens).
         """
-        z = self.encoder(x.flatten(start_dim=1))
+        z = self.encoder(x.flatten(start_dim=1).to(self.device))
         logits_rec = self.decoder(z)
         return logits_rec.reshape(x.shape)
 
@@ -74,7 +78,7 @@ class Autoencoder(torch.nn.Module):
         cross entropy.
         """
         return torch.nn.functional.cross_entropy(
-            input=self.forward(x).permute(0, 2, 1),
-            target=x.argmax(dim=-1),
+            input=self.forward(x.to(self.device)).permute(0, 2, 1),
+            target=x.argmax(dim=-1).to(self.device),
             reduction="mean",
         )

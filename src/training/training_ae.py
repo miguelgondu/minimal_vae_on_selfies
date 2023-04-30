@@ -74,8 +74,14 @@ def train_autoencoder(
     """
     Trains an autoencoder on the provided dataset.
     """
+    # Define the device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     model = Autoencoder(
-        database_name=dataset_name, max_length=max_length, latent_dim=latent_dim
+        database_name=dataset_name,
+        max_length=max_length,
+        latent_dim=latent_dim,
+        device=device,
     )
 
     # Load the data

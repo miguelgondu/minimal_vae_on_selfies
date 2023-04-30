@@ -54,11 +54,11 @@ if __name__ == "__main__":
 
     # Saving a super small version of the dataset
     # composed of the first 5000 SELFIES.
-    super_small_selfies = pd.read_csv(
+    tiny_selfies = pd.read_csv(
         PROCESSED_DATA_PATH / "SMALL-CID-SELFIES", sep="\t", header=None, nrows=5000
     )
-    super_small_selfies.to_csv(
-        PROCESSED_DATA_PATH / "SUPER-SMALL-CID-SELFIES",
+    tiny_selfies.to_csv(
+        PROCESSED_DATA_PATH / "TINY-CID-SELFIES",
         sep="\t",
         header=False,
         index=False,

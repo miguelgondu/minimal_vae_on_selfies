@@ -24,13 +24,31 @@ python -c "import rdkit; print(rdkit.__version__)"
 
 If you run into trouble, [check RDKit's documentation here](https://www.rdkit.org/docs/Install.html).
 
+You should add the `src/` file to your **PYTHONPATH**. If you're using VSCode for running and debugging, this can be done by adding this key-value pair your `launch.json` :
+```json
+"env": {
+    "PYTHONPATH": "${workspaceFolder}${pathSeparator}src:${env:PYTHONPATH}"
+}
+```
+
 ## Data preprocessing
 
-In `src/data_preprocessing` you can find files for downloading the dataset (which is PubChem's `CID-SMILES` saved at `ftp://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Extras/CID-SMILES.gz`) and processing it to a SELFIES dataset, extracting tokens as well.
+In `src/data_preprocessing` you can find files for downloading the dataset (which is PubChem's `CID-SMILES` saved at `ftp://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Extras/CID-SMILES.gz`) and processing it to small dataset of 5000 SELFIES strings in `data/processed/SUPER-SMALL-CID-SELFIES`, which is **already available in the repo**.
 
-- `download_dataset.py` lets you download the dataset and decompress it. **Warning**: you will need 8Gb of disk space, since the decompressed CID-SMILES file is quite large.
+If you want access to the other datasets (for, say, a larger training run), you can run the following scripts. **Warning:** you will need plenty of disk space, since the uncompressed CID-SMILES is already 8Gb.
+
+- `download_dataset.py` lets you download the dataset and decompress it.
 - `smiles_to_strings.py` reads the file at `data/raw/CID-SMILES` in chuncks, and progressively translates the SMILES to SELFIES using The Matter's Lab translator.[^3] Each processed chunck is appended at the end of a CID-SELFIES file in `data/processed/CID-SELFIES`.
-- `getting_all_tokens.py` reads `data/processed/CID-SELFIES` by chuncks and saves, at each iteration, a json file with all the tokens it found in format `{token: count}`.
+- `small_selfies.py` filters all the SELFIES in the dataset that are larger than 300 tokens, outputting a file in `data/processed/SMALL-CID-SELFIES`. Finally, a subset of only 5000 of these SELFIES is stored in `data/processed/SUPER-SMALL-CID-SELFIES`, which is the file used for training. However, the models and training pipeline are built in such a way that training on the entire `SMALL-CID-SELFIES` should be feasible.
+
+This figure shows the data preprocessing.
+
+[TODO: add figure]
+
+## Tokenizing
+
+
+## Model's definition
 
 
 

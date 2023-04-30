@@ -15,7 +15,30 @@ from utils.tokens import from_selfie_to_ids
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 
 
-def load_data(
+def load_dataset_as_dataframe(
+    dataset_name: str = "SUPER-SMALL-CID-SELFIES",
+    train_ratio: float = 0.8,
+    random_seed: int = 42,
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    ...
+    """
+    # Load the data
+    df = pd.read_csv(
+        ROOT_DIR / "data" / "processed" / f"{dataset_name}",
+        sep="\t",
+        header=None,
+        names=["CID", "SELFIES"],
+    )
+
+    # Split the SELFIES into train and test
+    train_df = df.sample(frac=train_ratio, random_state=random_seed)
+    test_df = df.drop(train_df.index)
+
+    return train_df, test_df
+
+
+def load_dataloaders(
     dataset_name: str = "SUPER-SMALL-CID-SELFIES",
     batch_size: int = 128,
     max_length: int = 300,
@@ -39,17 +62,11 @@ def load_data(
     ) as fp:
         tokens_dict = json.load(fp)
 
-    # Load the data
-    df = pd.read_csv(
-        ROOT_DIR / "data" / "processed" / f"{dataset_name}",
-        sep="\t",
-        header=None,
-        names=["CID", "SELFIES"],
+    train_df, test_df = load_dataset_as_dataframe(
+        dataset_name=dataset_name,
+        train_ratio=train_ratio,
+        random_seed=random_seed,
     )
-
-    # Split the SELFIES into train and test
-    train_df = df.sample(frac=train_ratio, random_state=random_seed)
-    test_df = df.drop(train_df.index)
 
     # Computing the tokens for each selfie
     train_df["tokens"] = train_df["SELFIES"].apply(
@@ -100,6 +117,6 @@ def load_data(
 
 
 if __name__ == "__main__":
-    train_loader, test_loader = load_data()
+    train_loader, test_loader = load_dataloaders()
     print(train_loader)
     print(test_loader)

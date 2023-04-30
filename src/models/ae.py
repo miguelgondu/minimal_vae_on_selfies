@@ -15,18 +15,18 @@ ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 class Autoencoder(torch.nn.Module):
     def __init__(
         self,
-        database_name: str = "SUPER-SMALL-CID-SELFIES",
+        dataset_name: str = "SUPER-SMALL-CID-SELFIES",
         max_length: int = 300,
         latent_dim: int = 64,
         device: torch.device = torch.device("cpu"),
     ):
         super().__init__()
-        self.database_name = database_name
+        self.dataset_name = dataset_name
         self.device = device
 
         # Load the token dictionary
         with open(
-            ROOT_DIR / "data" / "processed" / f"tokens_{database_name}.json", "r"
+            ROOT_DIR / "data" / "processed" / f"tokens_{dataset_name}.json", "r"
         ) as fp:
             self.token_dict = json.load(fp)
 

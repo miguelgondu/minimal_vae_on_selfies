@@ -10,7 +10,7 @@ from torch.utils.data.dataloader import DataLoader
 import torch
 from src.models.ae import ROOT_DIR
 
-from utils.data import load_data
+from utils.data import load_dataloaders
 
 from models.ae import Autoencoder
 
@@ -78,14 +78,14 @@ def train_autoencoder(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = Autoencoder(
-        database_name=dataset_name,
+        dataset_name=dataset_name,
         max_length=max_length,
         latent_dim=latent_dim,
         device=device,
     )
 
     # Load the data
-    training_loader, testing_loader = load_data(
+    training_loader, testing_loader = load_dataloaders(
         dataset_name=dataset_name, batch_size=batch_size, max_length=max_length
     )
 

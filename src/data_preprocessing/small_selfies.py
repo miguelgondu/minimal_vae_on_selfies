@@ -1,9 +1,9 @@
 """
 This script transforms the CID-SELFIES dataset
-by removing all SELFIES that are larger than 300 tokens.
+by removing all SELFIES that are larger than 50 tokens.
 
 It saves a SMALL-CID-SELFIES file with these,
-and it also saves a SUPER-SMALL-CID-SELFIES file
+and it also saves a TINY-CID-SELFIES file
 with only the first 5000 SELFIES in SMALL-CID-SELFIES.
 """
 
@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
             # Removing all SELFIES that are larger than 300 tokens
             chunk = chunk[
-                chunk[1].apply(lambda x: len(from_selfie_to_tokens(x))) <= 300
+                chunk[1].apply(lambda x: len(from_selfie_to_tokens(x))) <= 50
             ]
 
             # Saving the SELFIES

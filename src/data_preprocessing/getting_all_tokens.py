@@ -22,7 +22,7 @@ if __name__ == "__main__":
     keyword_args = {
         "sep": "\t",
         "header": None,
-        "chunksize": 1e5,
+        "chunksize": 1e6,
     }
     tokens_with_count = defaultdict(int)
     with pd.read_csv(PROCESSED_DATA_PATH / "CID-SELFIES", **keyword_args) as reader:
@@ -35,9 +35,9 @@ if __name__ == "__main__":
             for selfie in selfies.values:
                 for token in set(re.findall(r"\[.*?\]", selfie)):
                     tokens_with_count[token] += 1
-        
-        print(tokens_with_count)
-    
-    # Saving the tokens
-    with open(PROCESSED_DATA_PATH / "tokens.json") as fp:
-        json.dump(tokens_with_count, fp)
+
+            # Saving the tokens
+            with open(PROCESSED_DATA_PATH / "tokens.json", "w") as fp:
+                json.dump(tokens_with_count, fp)
+
+    print(tokens_with_count)

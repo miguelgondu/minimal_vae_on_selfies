@@ -16,7 +16,7 @@ ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 
 
 def load_dataset_as_dataframe(
-    dataset_name: str = "SUPER-SMALL-CID-SELFIES",
+    dataset_name: str = "TINY-CID-SELFIES",
     train_ratio: float = 0.8,
     random_seed: int = 42,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
@@ -39,9 +39,9 @@ def load_dataset_as_dataframe(
 
 
 def load_dataloaders(
-    dataset_name: str = "SUPER-SMALL-CID-SELFIES",
+    dataset_name: str = "TINY-CID-SELFIES",
     batch_size: int = 128,
-    max_length: int = 300,
+    max_token_length: int = 20,
     train_ratio: float = 0.8,
     random_seed: int = 42,
 ) -> Tuple[DataLoader, DataLoader]:
@@ -52,7 +52,7 @@ def load_dataloaders(
 
     These DataLoaders contain tensors of shape (batch_size, max_length, n_tokens).
 
-    By default, the database used is SUPER-SMALL-CID-SELFIES, which is a
+    By default, the database used is TINY-CID-SELFIES, which is a
     small subset of the CID-SELFIES database, containing 5000 molecules. These
     have at most 300 tokens.
     """
@@ -73,7 +73,7 @@ def load_dataloaders(
         lambda selfie: from_selfie_to_ids(
             selfie,
             tokens_dict=tokens_dict,
-            max_length=max_length,
+            max_token_length=max_token_length,
             dataset_name=dataset_name,
         )
     )
@@ -81,17 +81,17 @@ def load_dataloaders(
         lambda selfie: from_selfie_to_ids(
             selfie,
             tokens_dict=tokens_dict,
-            max_length=max_length,
+            max_token_length=max_token_length,
             dataset_name=dataset_name,
         )
     )
 
     # Build the one-hot vectors
     train_data = torch.zeros(
-        (len(train_df), max_length, len(tokens_dict)), dtype=torch.float32
+        (len(train_df), max_token_length, len(tokens_dict)), dtype=torch.float32
     )
     test_data = torch.zeros(
-        (len(test_df), max_length, len(tokens_dict)), dtype=torch.float32
+        (len(test_df), max_token_length, len(tokens_dict)), dtype=torch.float32
     )
 
     # Populate the one-hot vectors

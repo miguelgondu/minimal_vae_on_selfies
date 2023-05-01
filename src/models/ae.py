@@ -12,19 +12,29 @@ import torch
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 
 
-class Autoencoder(torch.nn.Module):
+class AutoencoderSelfies(torch.nn.Module):
     def __init__(
         self,
         dataset_name: str = "TINY-CID-SELFIES",
-        max_length: int = 50,
+        max_token_length: int = 50,
         latent_dim: int = 64,
         device: torch.device = torch.device("cpu"),
     ):
         super().__init__()
         self.dataset_name = dataset_name
         self.device = device
+        self.max_token_length = max_token_length
 
         # Load the token dictionary
+        # making sure that the file exists in the first place.
+        assert (
+            ROOT_DIR / "data" / "processed" / f"tokens_{dataset_name}.json"
+        ).exists(), (
+            f"tokens_{dataset_name}.json does not exist in "
+            f"{ROOT_DIR / 'data' / 'processed'}! Did you forget to run "
+            "src/tokenizing/compute_tokens.py?"
+        )
+
         with open(
             ROOT_DIR / "data" / "processed" / f"tokens_{dataset_name}.json", "r"
         ) as fp:
@@ -32,7 +42,7 @@ class Autoencoder(torch.nn.Module):
 
         # Define the input length: length of a given SELFIES
         # (always padded to be {max_length}), times the number of tokens
-        self.input_length = max_length * len(self.token_dict)
+        self.input_length = max_token_length * len(self.token_dict)
 
         # Define the model
         self.encoder = torch.nn.Sequential(
@@ -56,6 +66,34 @@ class Autoencoder(torch.nn.Module):
         )
 
         self.to(device)
+
+    def encode(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Takes a batch of SELFIES, encoded as one-hot vectors
+        and runs a forward pass through the encoder.
+
+        Input:
+            x: torch.Tensor of shape (batch_size, length_of_sequence, n_tokens).
+
+        Output:
+            z: torch.Tensor of shape (batch_size, latent_dim).
+        """
+        return self.encoder(x.flatten(start_dim=1).to(self.device))
+
+    def decode(self, z: torch.Tensor) -> torch.Tensor:
+        """
+        Takes a batch of latent vectors and runs a forward
+        pass through the decoder.
+
+        Input:
+            z: torch.Tensor of shape (batch_size, latent_dim).
+
+        Output:
+            logits_rec: torch.Tensor of shape (batch_size, length_of_sequence, n_tokens).
+        """
+        return self.decoder(z).reshape(
+            z.shape[0], self.max_token_length, len(self.token_dict)
+        )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """

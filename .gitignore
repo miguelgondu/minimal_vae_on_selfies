@@ -1,6 +1,10 @@
 .vscode/
 .DS_Store
 
+# Ignoring images
+*.png
+*.jpg
+
 # Ignoring python-related files
 *.py[cod]
 __pycache__/
@@ -11,10 +15,10 @@ __pycache__/
 # Ignoring the dataset
 data/raw/
 data/processed/CID-SELFIES
-data/processed/SMALL-CID-SELFIES
+data/processed/SMALL-CID-SELFIES-20
 
 # Except for the super small SELFIES dataset
-!data/processed/SUPER-SMALL-CID-SELFIES
+!data/processed/TINY-CID-SELFIES-20
 
 # Ignoring trained models
-data/trained_models/
+*.pt

@@ -1,5 +1,5 @@
 """
-Computes the tokens for the SUPER-SMALL-CID-SELFIE dataset,
+Computes the tokens for {dataset_name} dataset,
 and stores it in a JSON file in data/processed/tokens.json.
 These tokens are sorted by their frequency in the dataset,
 except for the padding token, which is always the first one.
@@ -15,6 +15,7 @@ from utils.tokens import from_selfie_to_tokens
 
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 
+
 def load_dataset(dataset_path: Path) -> pd.DataFrame:
     return pd.read_csv(
         dataset_path,
@@ -23,11 +24,12 @@ def load_dataset(dataset_path: Path) -> pd.DataFrame:
         names=["cid", "selfie"],
     )
 
+
 if __name__ == "__main__":
     # Setting up data paths
     PROCESSED_DATA_PATH = ROOT_DIR / "data" / "processed"
-    dataset_name = "TINY-CID-SELFIES"
-    
+    dataset_name = "TINY-CID-SELFIES-20"
+
     # Loading the dataset
     dataset = load_dataset(PROCESSED_DATA_PATH / dataset_name)
 

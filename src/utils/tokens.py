@@ -22,8 +22,8 @@ def from_selfie_to_tokens(selfie: str) -> List[str]:
 def from_tokens_to_ids(
     tokens: List[str],
     tokens_dict: Dict[str, int] = None,
-    max_length: int = 300,
-    dataset_name: str = "SUPER-SMALL-CID-SELFIES",
+    max_token_length: int = 20,
+    dataset_name: str = "TINY-CID-SELFIES",
 ) -> List[int]:
     """
     Returns the list of ids corresponding to the given tokens, always padded
@@ -31,9 +31,7 @@ def from_tokens_to_ids(
     from the data/processed/tokens_{dataset_name}.json file.
 
     By default, the dataset_name is set to SUPER-SMALL-CID-SELFIES, which
-    is the dataset used for the experiments in this repository, and max_length
-    is set to 300, which is the maximum length of a SELFIE string in the
-    SUPER-SMALL-CID-SELFIES dataset.
+    is the dataset used for the experiments in this repository, and max_length is set to 20, which is the maximum length of a SELFIE string in the SMALL-CID-SELFIES and TINY-CID-SELFIES datasets.
     """
     if tokens_dict is None:
         with open(
@@ -43,13 +41,15 @@ def from_tokens_to_ids(
 
     # Returns the list of ids corresponding to the given tokens, always padded
     # to have the same length.
-    return [tokens_dict[token] for token in tokens] + [0] * (max_length - len(tokens))
+    return [tokens_dict[token] for token in tokens] + [0] * (
+        max_token_length - len(tokens)
+    )
 
 
 def from_selfie_to_ids(
     selfie: str,
     tokens_dict: Dict[str, int] = None,
-    max_length: int = 300,
+    max_token_length: int = 300,
     dataset_name: str = "SUPER-SMALL-CID-SELFIES",
 ) -> List[int]:
     """
@@ -60,6 +60,6 @@ def from_selfie_to_ids(
     return from_tokens_to_ids(
         tokens,
         tokens_dict=tokens_dict,
-        max_length=max_length,
+        max_token_length=max_token_length,
         dataset_name=dataset_name,
     )

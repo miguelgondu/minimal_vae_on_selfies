@@ -4,7 +4,7 @@ by removing all SELFIES that are larger than 20 tokens.
 
 It saves a SMALL-CID-SELFIES file with these,
 and it also saves a TINY-CID-SELFIES file
-with only the first 5000 SELFIES in SMALL-CID-SELFIES.
+with only the first 50000 SELFIES in SMALL-CID-SELFIES.
 """
 
 from pathlib import Path
@@ -53,12 +53,17 @@ if __name__ == "__main__":
                 f"cat {PROCESSED_DATA_PATH}/SMALL-CID-SELFIES-{MAX_TOKEN_LENGTH}-* >> "
                 f"{PROCESSED_DATA_PATH}/SMALL-CID-SELFIES-{MAX_TOKEN_LENGTH}"
             )
-            os.system(f"rm {PROCESSED_DATA_PATH}/SMALL-CID-SELFIES-{MAX_TOKEN_LENGTH}-{i}")
+            os.system(
+                f"rm {PROCESSED_DATA_PATH}/SMALL-CID-SELFIES-{MAX_TOKEN_LENGTH}-{i}"
+            )
 
     # Saving a super small version of the dataset
     # composed of the first 5000 SELFIES.
     tiny_selfies = pd.read_csv(
-        PROCESSED_DATA_PATH / f"SMALL-CID-SELFIES-{MAX_TOKEN_LENGTH}", sep="\t", header=None, nrows=5000
+        PROCESSED_DATA_PATH / f"SMALL-CID-SELFIES-{MAX_TOKEN_LENGTH}",
+        sep="\t",
+        header=None,
+        nrows=50000,
     )
     tiny_selfies.to_csv(
         PROCESSED_DATA_PATH / f"TINY-CID-SELFIES-{MAX_TOKEN_LENGTH}",

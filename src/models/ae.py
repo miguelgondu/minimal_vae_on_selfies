@@ -15,8 +15,8 @@ ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 class Autoencoder(torch.nn.Module):
     def __init__(
         self,
-        dataset_name: str = "SUPER-SMALL-CID-SELFIES",
-        max_length: int = 300,
+        dataset_name: str = "TINY-CID-SELFIES",
+        max_length: int = 50,
         latent_dim: int = 64,
         device: torch.device = torch.device("cpu"),
     ):

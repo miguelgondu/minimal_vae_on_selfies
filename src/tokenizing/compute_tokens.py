@@ -26,7 +26,7 @@ def load_dataset(dataset_path: Path) -> pd.DataFrame:
 if __name__ == "__main__":
     # Setting up data paths
     PROCESSED_DATA_PATH = ROOT_DIR / "data" / "processed"
-    dataset_name = "SUPER-SMALL-CID-SELFIES"
+    dataset_name = "TINY-CID-SELFIES"
     
     # Loading the dataset
     dataset = load_dataset(PROCESSED_DATA_PATH / dataset_name)

@@ -1,5 +1,5 @@
 """
-Loads the Autoencoder model in trained_models/ae_{database_name}.pt
+Loads a Variational Autoencoder model in trained_models/VAESelfies_{database_name}.pt
 and checks how interpolations in the latet space look.
 """
 from typing import Union
@@ -69,6 +69,42 @@ def decode_some_test_data(model: Union[AutoencoderSelfies, VAESelfies]):
         print(test_df.iloc[i]["SELFIES"], "vs.", reconstructed_selfie, "\n")
 
 
+def unconditioned_samples_from_latent_space(
+    model: Union[AutoencoderSelfies, VAESelfies], n_samples: int = 32
+):
+    """
+    Samples {n_samples} latent vectors from the prior distribution, decodes them,
+    transforms them to SELFIES, and plots them.
+    """
+    # Sample {n_samples} latent vectors from the prior distribution
+    with torch.no_grad():
+        latent_representations = model.p_z.sample((n_samples,))
+
+        # Get the reconstruction
+        reconstruction = model.decode(latent_representations)
+        if isinstance(reconstruction, Categorical):
+            reconstruction = reconstruction.probs
+
+        reconstruction = reconstruction.argmax(dim=-1)
+
+    # Convert the reconstruction to SELFIES
+    inv_tokens_dict = {v: k for k, v in model.tokens_dict.items()}
+    reconstruction_selfies = [
+        "".join([inv_tokens_dict[i] for i in x if i != 0])
+        for x in reconstruction.tolist()
+    ]
+
+    # Plot the selfies
+    IMGS_DIR = ROOT_DIR / "data" / "figures"
+    IMGS_DIR.mkdir(exist_ok=True, parents=True)
+
+    for i, reconstructed_selfie in enumerate(reconstruction_selfies):
+        try:
+            selfie_to_png(reconstructed_selfie, IMGS_DIR / f"sample_{i}.png")
+        except AssertionError as e:
+            print(e)
+
+
 def visualize_a_random_walk(
     model: Union[AutoencoderSelfies, VAESelfies], noise_scale: float = 0.5
 ):
@@ -90,7 +126,7 @@ def visualize_a_random_walk(
 
     # Computing the one-hot representation of Aspirin
     x = from_selfie_to_tensor(aspirin_selfie, model.tokens_dict)
-    
+
     # Encode the SELFIES for aspirin
     with torch.no_grad():
         latent_representation = model.encode(x)
@@ -134,4 +170,5 @@ if __name__ == "__main__":
 
     model.eval()
 
-    visualize_a_random_walk(model, noise_scale=0.05)
+    unconditioned_samples_from_latent_space(model)
+    # visualize_a_random_walk(model, noise_scale=0.05)

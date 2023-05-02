@@ -13,7 +13,7 @@ import cairosvg
 import selfies as sf
 
 
-def selfie_to_png(selfie: str, save_path: Path, width: int = 300, height: int = 300):
+def selfie_to_png(selfie: str, save_path: Path, width: int = 200, height: int = 200):
     """
     Save substance structure as jpg
 
@@ -22,6 +22,7 @@ def selfie_to_png(selfie: str, save_path: Path, width: int = 300, height: int = 
     """
     # Convert selfie to mol
     mol = Chem.MolFromSmiles(sf.decoder(selfie))
+    assert mol is not None, f"Couldn't convert {selfie} to mol"
 
     # Render high resolution molecule
     drawer = rdMolDraw2D.MolDraw2DSVG(width, height)

@@ -39,11 +39,11 @@ class VAESelfies(nn.Module):
         with open(
             ROOT_DIR / "data" / "processed" / f"tokens_{dataset_name}.json", "r"
         ) as fp:
-            self.token_dict = json.load(fp)
+            self.tokens_dict = json.load(fp)
 
         # Define the input length: length of a given SELFIES
         # (always padded to be {max_length}), times the number of tokens
-        self.input_length = max_token_length * len(self.token_dict)
+        self.input_length = max_token_length * len(self.tokens_dict)
 
         # Define the model
         self.encoder = nn.Sequential(
@@ -97,7 +97,7 @@ class VAESelfies(nn.Module):
 
         # The categorical distribution expects (batch_size, ..., num_classes)
         return Categorical(
-            logits=logits.reshape(-1, self.max_token_length, len(self.token_dict))
+            logits=logits.reshape(-1, self.max_token_length, len(self.tokens_dict))
         )
 
     def forward(self, x: torch.Tensor) -> Tuple[Normal, Categorical]:

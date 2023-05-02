@@ -16,7 +16,7 @@ ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 
 
 def load_dataset_as_dataframe(
-    dataset_name: str = "TINY-CID-SELFIES",
+    dataset_name: str = "TINY-CID-SELFIES-20",
     train_ratio: float = 0.8,
     random_seed: int = 42,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
@@ -39,7 +39,7 @@ def load_dataset_as_dataframe(
 
 
 def load_dataloaders(
-    dataset_name: str = "TINY-CID-SELFIES",
+    dataset_name: str = "TINY-CID-SELFIES-20",
     batch_size: int = 128,
     max_token_length: int = 20,
     train_ratio: float = 0.8,
@@ -53,8 +53,8 @@ def load_dataloaders(
     These DataLoaders contain tensors of shape (batch_size, max_length, n_tokens).
 
     By default, the database used is TINY-CID-SELFIES, which is a
-    small subset of the CID-SELFIES database, containing 5000 molecules. These
-    have at most 300 tokens.
+    small subset of the CID-SELFIES database, containing 50000 molecules. These
+    have at most 20 tokens.
     """
     # Load the token dictionary
     with open(

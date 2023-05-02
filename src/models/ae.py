@@ -38,11 +38,11 @@ class AutoencoderSelfies(torch.nn.Module):
         with open(
             ROOT_DIR / "data" / "processed" / f"tokens_{dataset_name}.json", "r"
         ) as fp:
-            self.token_dict = json.load(fp)
+            self.tokens_dict = json.load(fp)
 
         # Define the input length: length of a given SELFIES
         # (always padded to be {max_length}), times the number of tokens
-        self.input_length = max_token_length * len(self.token_dict)
+        self.input_length = max_token_length * len(self.tokens_dict)
 
         # Define the model
         self.encoder = torch.nn.Sequential(
@@ -92,7 +92,7 @@ class AutoencoderSelfies(torch.nn.Module):
             logits_rec: torch.Tensor of shape (batch_size, length_of_sequence, n_tokens).
         """
         return self.decoder(z).reshape(
-            z.shape[0], self.max_token_length, len(self.token_dict)
+            z.shape[0], self.max_token_length, len(self.tokens_dict)
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

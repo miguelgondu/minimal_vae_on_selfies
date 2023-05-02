@@ -7,6 +7,8 @@ from typing import List, Dict
 import json
 import re
 
+import torch
+
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 
 
@@ -49,8 +51,8 @@ def from_tokens_to_ids(
 def from_selfie_to_ids(
     selfie: str,
     tokens_dict: Dict[str, int] = None,
-    max_token_length: int = 300,
-    dataset_name: str = "SUPER-SMALL-CID-SELFIES",
+    max_token_length: int = 20,
+    dataset_name: str = "TINY-CID-SELFIES-20",
 ) -> List[int]:
     """
     Returns a list of ids corresponding to the tokens
@@ -63,3 +65,53 @@ def from_selfie_to_ids(
         max_token_length=max_token_length,
         dataset_name=dataset_name,
     )
+
+
+def from_ids_to_tensor(
+    ids: List[int],
+    token_dict: Dict[str, int],
+    device: torch.device = torch.device("cpu"),
+) -> torch.Tensor:
+    """
+    Returns a tensor of the given ids as one-hot encodings,
+    on the given device.
+
+    The output tensor has shape (1, length_of_sequence, size_of_vocabulary).
+    """
+    # Start by creating a tensor of zeros
+    # of shape (1, length_of_sequence, size_of_vocabulary)
+    one_hot_encoding = torch.zeros(1, len(ids), len(token_dict), device=device)
+
+    # Set the corresponding indices to 1
+    one_hot_encoding[0, torch.arange(len(ids)), ids] = 1
+
+    return one_hot_encoding
+
+
+def from_selfie_to_tensor(
+    selfie: str, token_dict: Dict[str, int], device: torch.device = torch.device("cpu")
+) -> torch.Tensor:
+    """
+    Returns a tensor of the given selfie string as one-hot encodings,
+    on the given device.
+
+    The output tensor has shape (1, length_of_sequence, size_of_vocabulary).
+    """
+    ids = from_selfie_to_ids(selfie, token_dict)
+    return from_ids_to_tensor(ids, token_dict, device=device)
+
+
+def from_tensor_to_selfie(x: torch.Tensor, tokens_dict: Dict[str, int]) -> str:
+    """
+    Returns a selfie string from a tensor of one-hot encodings.
+    """
+    # Get the inverse of the tokens_dict
+    inv_tokens_dict = {v: k for k, v in tokens_dict.items()}
+
+    # Get the indices of the maximum values
+    indices = torch.argmax(x, dim=-1).squeeze()
+    selfie = "".join(
+        [inv_tokens_dict[index.item()] for index in indices if index.item() != 0]
+    )
+
+    return selfie

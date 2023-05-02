@@ -9,17 +9,29 @@ import json
 import torch
 from torch.distributions import Normal, Categorical
 
+import selfies as sf
+
+from rdkit import Chem
+from rdkit.Chem.QED import qed
+
 from models.ae import AutoencoderSelfies
 from models.vae import VAESelfies
-from utils.data import load_dataloaders
 
+from utils.data import load_dataloaders
 from utils.data import load_dataset_as_dataframe
-from utils.tokens import from_selfie_to_tokens
+from utils.tokens import (
+    from_selfie_to_tokens,
+    from_selfie_to_ids,
+    from_selfie_to_tensor,
+    from_tensor_to_selfie,
+)
+from utils.visualization import selfie_to_png
+
 
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 
 
-def explore(model: Union[AutoencoderSelfies, VAESelfies]):
+def decode_some_test_data(model: Union[AutoencoderSelfies, VAESelfies]):
     dataset_name = model.dataset_name
 
     # Load the tokens dictionary
@@ -28,8 +40,8 @@ def explore(model: Union[AutoencoderSelfies, VAESelfies]):
     ) as fp:
         tokens_dict = json.load(fp)
 
-    train_df, test_df = load_dataset_as_dataframe(dataset_name=dataset_name)
-    train_loader, test_loader = load_dataloaders(dataset_name=dataset_name)
+    _, test_df = load_dataset_as_dataframe(dataset_name=dataset_name)
+    _, test_loader = load_dataloaders(dataset_name=dataset_name)
     some_tensors = test_loader.dataset.tensors[0][:10]
 
     # Get the latent space representation of the test set
@@ -57,16 +69,54 @@ def explore(model: Union[AutoencoderSelfies, VAESelfies]):
         print(test_df.iloc[i]["SELFIES"], "vs.", reconstructed_selfie, "\n")
 
 
+def visualize_a_random_walk(
+    model: Union[AutoencoderSelfies, VAESelfies], noise_scale: float = 0.5
+):
+    """
+    Takes the SMILES for Aspirin, transfroms it to SELFIES,
+    and then walks around it in the latent space of the VAESelfies
+    we trained.
+    """
+    # Defining the SMILES and SELFIES for Aspirin
+    aspirin_smiles = "CC(=O)OC1=CC=CC=C1C(=O)O"
+    aspirin_selfie = sf.encoder(aspirin_smiles)
+
+    print("QED for Aspirin:", qed(Chem.MolFromSmiles(aspirin_smiles)))
+
+    # Defining the saving paths for images
+    IMGS_DIR = ROOT_DIR / "data" / "figures"
+    IMGS_DIR.mkdir(exist_ok=True, parents=True)
+    selfie_to_png(aspirin_selfie, IMGS_DIR / "aspirin_0.png")
+
+    # Computing the one-hot representation of Aspirin
+    x = from_selfie_to_tensor(aspirin_selfie, model.tokens_dict)
+    
+    # Encode the SELFIES for aspirin
+    with torch.no_grad():
+        latent_representation = model.encode(x)
+        if isinstance(latent_representation, Normal):
+            latent_representation = latent_representation.mean
+
+    # Walk around the latent space
+    for i in range(10):
+        with torch.no_grad():
+            latent_representation += (
+                torch.randn_like(latent_representation) * noise_scale
+            )
+            reconstruction = model.decode(latent_representation)
+            if isinstance(reconstruction, Categorical):
+                reconstruction = reconstruction.probs
+
+            selfie = from_tensor_to_selfie(reconstruction, model.tokens_dict)
+            # print(latent_representation)
+            print(selfie, qed(Chem.MolFromSmiles(sf.decoder(selfie))))
+
+            # Draw the molecule
+            selfie_to_png(selfie, IMGS_DIR / f"aspirin_{i+1}.png")
+
+
 if __name__ == "__main__":
     # Load the model and set it to eval mode
-    # model_name = "AutoencoderSelfies_TINY-CID-SELFIES-20"
-    # model = AutoencoderSelfies(
-    #     dataset_name="TINY-CID-SELFIES-20",
-    #     max_token_length=20,
-    #     latent_dim=64,
-    #     device=torch.device("cpu"),
-    # )
-
     model_name = "VAESelfies_TINY-CID-SELFIES-20"
     model = VAESelfies(
         dataset_name="TINY-CID-SELFIES-20",
@@ -83,5 +133,5 @@ if __name__ == "__main__":
     )
 
     model.eval()
-    print(model)
-    explore(model)
+
+    visualize_a_random_walk(model, noise_scale=0.05)

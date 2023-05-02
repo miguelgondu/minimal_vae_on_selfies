@@ -5,7 +5,6 @@ using RDKit and cairosvg.
 from pathlib import Path
 
 from rdkit import Chem
-from rdkit.Chem import Draw
 from rdkit.Chem.Draw import rdMolDraw2D
 
 import cairosvg

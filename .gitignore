@@ -2,8 +2,7 @@
 .DS_Store
 
 # Ignoring images
-*.png
-*.jpg
+data/figures
 
 # Ignoring python-related files
 *.py[cod]
@@ -22,3 +21,6 @@ data/processed/SMALL-CID-SELFIES-20
 
 # Ignoring trained models
 *.pt
+
+# Ignores the barplot script
+barplot.py

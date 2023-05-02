@@ -1,8 +1,8 @@
 """
 Implements a Variational Autoencoder that can be trained on
-SELFIES data. It is originally designed to handle either the SMALL-CID-SELFIES
-or the TINY-CID-SELFIES datasets, but it could be used on the CID-SELFIES with
-a little bit of work.
+SELFIES data. It is originally designed to handle the
+TINY-CID-SELFIES-20 datasets, but it could be used on the 
+SMALL-CID-SELFIES-20 with a little bit of work.
 """
 from typing import Tuple
 from pathlib import Path

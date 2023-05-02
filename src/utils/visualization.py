@@ -15,7 +15,7 @@ import selfies as sf
 
 def selfie_to_png(selfie: str, save_path: Path, width: int = 200, height: int = 200):
     """
-    Save substance structure as jpg
+    Save a molecule (specified as a selfie string) as png file.
 
     Taken and adapted from the following stack overflow answer:
     https://stackoverflow.com/a/73449342/3516175

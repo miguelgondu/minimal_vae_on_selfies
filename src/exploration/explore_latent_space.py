@@ -1,6 +1,7 @@
 """
-Loads a Variational Autoencoder model in trained_models/VAESelfies_{database_name}.pt
-and checks how interpolations in the latet space look.
+Loads a Variational Autoencoder model in
+trained_models/VAESelfies_{database_name}.pt and
+checks how samples/random walks look in latent space look.
 """
 from typing import Union
 from pathlib import Path

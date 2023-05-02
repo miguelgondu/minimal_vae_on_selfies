@@ -21,7 +21,9 @@ def load_dataset_as_dataframe(
     random_seed: int = 42,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
-    ...
+    Given a certain dataset name in data/processed,
+    loads it as a pandas dataframe, and splits it into
+    train and test according to the given train_ratio.
     """
     # Load the data
     df = pd.read_csv(
@@ -52,9 +54,9 @@ def load_dataloaders(
 
     These DataLoaders contain tensors of shape (batch_size, max_length, n_tokens).
 
-    By default, the database used is TINY-CID-SELFIES, which is a
-    small subset of the CID-SELFIES database, containing 50000 molecules. These
-    have at most 20 tokens.
+    By default, the database used is TINY-CID-SELFIES-20, which is a
+    small subset of the SMALL-CID-SELFIES-20 database,
+    containing 50000 molecules. These have at most 20 tokens.
     """
     # Load the token dictionary
     with open(
@@ -87,6 +89,8 @@ def load_dataloaders(
     )
 
     # Build the one-hot vectors
+    # TODO: This doesn't scale, and is a silly way
+    # of creating the one-hot vectors.
     train_data = torch.zeros(
         (len(train_df), max_token_length, len(tokens_dict)), dtype=torch.float32
     )

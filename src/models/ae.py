@@ -2,7 +2,7 @@
 Implements a simple autoencoder that decodes
 the logits of a categorical distribution over
 the vocabulary (as defined by a certain
-token_{dataset_name}.json file)
+tokens_{dataset_name}.json file)
 """
 from pathlib import Path
 import json

@@ -38,7 +38,7 @@ You should add the `src/` file to your **PYTHONPATH**. If you're using VSCode fo
 
 ## Data preprocessing
 
-In `src/data_preprocessing` you can find files for downloading the dataset (which is PubChem's `CID-SMILES` saved at `ftp://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Extras/CID-SMILES.gz`) and processing it to a small dataset of 5000 SELFIES strings in `data/processed/SUPER-SMALL-CID-SELFIES`, which is **already available in the repo**.
+In `src/data_preprocessing` you can find files for downloading the dataset (which is PubChem's `CID-SMILES` saved at `ftp://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Extras/CID-SMILES.gz`) and processing it to a small dataset of 5000 SELFIES strings in `data/processed/TINY-CID-SELFIES-20`, which is **already available in the repo**.
 
 If you want access to the other datasets (for, say, a larger training run), you can run the following scripts. **Warning:** you will need plenty of disk space since the uncompressed CID-SMILES is already 8Gb.
 
@@ -108,6 +108,8 @@ self.decoder = nn.Sequential(
 
 After running `src/training/training_models.py`, a trained model is saved in `data/trained_models/VAESelfies_TINY-CID-SELFIES-20.pt` ([download it here](https://drive.google.com/file/d/1aAQ5z9EcuPzgep2lFQL-lJzSvUpCnPG_/view?usp=share_link)).
 
+**This model is nowhere close to state-of-the-art**. The goal of this code is to have a toy latent space to run experiments in, or to have a starting point for your new SOTA models!
+
 ## Some random samples
 
  The script in `src/exploration/explore_latent_space.py` samples randomly from its latent space. Some of those are at the beginning of this repository.
@@ -122,8 +124,20 @@ After running `src/training/training_models.py`, a trained model is saved in `da
 
 ## Cite this repository!
 
-[^1]: TODO: add cite to SELFIES.
-[^2]: TODO: cite SMILES.
+If you find this code useful, feel free to cite it!
+
+```bibtex
+@software{Gonzalez-Duque:VAESelfies:2023,
+author = {González-Duque, Miguel},
+title = {{Minimal implementation of a Variational Autoencoder on SELFIES representations of molecules}},
+url = {https://github.com/miguelgondu/minimal_VAE_on_selfies},
+version = {0.1},
+date = {2023-05-02}
+}
+```
+
+[^1]: https://pubmed.ncbi.nlm.nih.gov/36277819/
+[^2]: https://pubs.acs.org/doi/10.1021/ci00057a005
 [^3]: https://github.com/aspuru-guzik-group/selfies
 [^4]: We would need a smarter tokenizer, like the one provided by [MolGen](https://huggingface.co/zjunlp/MolGen-large). We'd also need to do better with the memory management.
 [^5]: https://pubs.acs.org/doi/10.1021/acs.jcim.0c00675

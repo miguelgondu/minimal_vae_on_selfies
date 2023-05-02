@@ -5,7 +5,7 @@
 ![Molecule sampled - 3](./static/sample3.png)
 ![Molecule sampled - 4](./static/sample4.png)
 
-SELFIES are a robust and discrete representation of molecules[^1], which are a sort of successor to SMILES[^2]. This repository contains a minimal working example of an MLP variational autoencoder that can be trained on SELFIES, including how to download a database of SELFIES strings, how to process these as categorical data, the training loops, and some samples from the latent space (see above).
+SELFIES are a robust and discrete representation of molecules[^1], which are a sort of successor to SMILES[^2]. This repository contains a minimal working example of an MLP variational autoencoder that can be trained on SELFIES of at most 20 tokens, including how to download a database of SELFIES strings, how to process these as categorical data, the training loops, and some samples from the latent space (see above).
 
 ## Prerequisites
 
@@ -21,14 +21,6 @@ following with
 pip install -r requirements.txt
 ```
 
-This `requirements.txt` file includes `RDKit`, which might be tricky to install depending on your OS. Make sure everything is setup properly by running
-
-```
-python -c "import rdkit; print(rdkit.__version__)"
-```
-
-If you run into trouble, [check RDKit's documentation here](https://www.rdkit.org/docs/Install.html).
-
 You should add the `src/` file to your **PYTHONPATH**. If you're using VSCode for running and debugging, this can be done by adding this key-value pair to your `launch.json` :
 ```json
 "env": {
@@ -38,7 +30,7 @@ You should add the `src/` file to your **PYTHONPATH**. If you're using VSCode fo
 
 ## Data preprocessing
 
-In `src/data_preprocessing` you can find files for downloading the dataset (which is PubChem's `CID-SMILES` saved at `ftp://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Extras/CID-SMILES.gz`) and processing it to a small dataset of 5000 SELFIES strings in `data/processed/TINY-CID-SELFIES-20`, which is **already available in the repo**.
+In `src/data_preprocessing` you can find files for downloading the dataset (which is PubChem's `CID-SMILES` saved at `ftp://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Extras/CID-SMILES.gz`) and processing it to a small dataset of 50000 SELFIES strings in `data/processed/TINY-CID-SELFIES-20`, which **is already available in the repo**.
 
 If you want access to the other datasets (for, say, a larger training run), you can run the following scripts. **Warning:** you will need plenty of disk space since the uncompressed CID-SMILES is already 8Gb.
 

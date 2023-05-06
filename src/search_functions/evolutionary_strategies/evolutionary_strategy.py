@@ -21,7 +21,7 @@ class EvolutionaryStrategy:
         # was evaluated
         @counted
         def counted_objective_function(inputs: torch.Tensor):
-            return objective_function.evaluate_objective(inputs)
+            return objective_function(inputs)
 
         self.objective_function = counted_objective_function
         self.population_size = population_size

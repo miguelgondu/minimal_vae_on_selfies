@@ -15,6 +15,7 @@ __pycache__/
 data/raw/
 data/processed/CID-SELFIES
 data/processed/SMALL-CID-SELFIES-20
+data/evolutionary_search_results
 
 # Except for the super small SELFIES dataset
 !data/processed/TINY-CID-SELFIES-20

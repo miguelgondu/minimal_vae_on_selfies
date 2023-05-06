@@ -27,6 +27,7 @@ class VAESelfies(nn.Module):
         super().__init__()
         self.dataset_name = dataset_name
         self.max_token_length = max_token_length
+        self.latent_dim = latent_dim
 
         assert max_token_length == int(dataset_name.split("-")[-1]), (
             f"max_token_length ({max_token_length}) must match the "

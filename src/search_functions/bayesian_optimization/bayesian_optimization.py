@@ -16,11 +16,11 @@ from botorch.optim import optimize_acqf
 
 from gpytorch.mlls import ExactMarginalLogLikelihood
 
-from utils.visualization.evolutionary_strategies import plot_algorithm
-from utils.visualization.bayesian_optimization import plot_prediction, plot_acquisition
+# from utils.visualization.evolutionary_strategies import plot_algorithm
+# from utils.visualization.bayesian_optimization import plot_prediction, plot_acquisition
 from utils.wrappers.counters import counted
 
-torch.set_default_dtype(torch.float64)
+# torch.set_default_dtype(torch.float64)
 
 
 class BayesianOptimization:

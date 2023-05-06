@@ -4,7 +4,7 @@ in our comparison. They were first developed in the REAL Lab [1].
 
 They're exported at this level too, making imports easier.
 
-[1]: Benchmarking evolution and Bayesian Optimization.
+[1]: Benchmarking evolutionary strategies and Bayesian Optimization.
      Elías Najarro & Miguel González-Duque, 2023.
      https://github.com/real-itu/benchmarking_evolution_and_bo
 """

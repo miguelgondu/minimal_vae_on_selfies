@@ -42,7 +42,9 @@ class CMA_ES(EvolutionaryStrategy):
         )
 
         self._cmaes_searcher = CMAES_from_evotorch(
-            self.problem, stdev_init=exploration, popsize=population_size
+            self.problem,
+            stdev_init=exploration,
+            popsize=population_size,
         )
 
     def get_current_best(self):

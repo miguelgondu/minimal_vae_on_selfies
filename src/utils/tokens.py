@@ -9,6 +9,8 @@ import re
 
 import torch
 
+from models.vae import VAESelfies
+
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 
 
@@ -133,5 +135,17 @@ def from_tensor_to_selfie(
             for i in range(indices.shape[0])
         ]
         return selfies
+
+
+def from_latent_code_to_selfie(z: torch.Tensor, vae: VAESelfies) -> str:
+    """
+    Decodes the latent code z into a selfie string.
+    """
+    with torch.no_grad():
+        # Decode the latent code
+        x = vae.decode(z).probs
+
+        # Convert the tensor to a selfie string
+        selfie = from_tensor_to_selfie(x, vae.tokens_dict)
 
     return selfie

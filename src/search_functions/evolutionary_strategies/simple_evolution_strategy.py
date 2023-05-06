@@ -14,16 +14,16 @@ class SimpleEvolutionStrategy(EvolutionaryStrategy):
     def __init__(
         self,
         objective_function: Callable[[torch.Tensor], torch.Tensor],
-        initial_best: torch.Tensor,
-        solution_length : int,
-        limits : Tuple[float, float] = None,
+        solution_length: int,
+        initial_best: torch.Tensor = None,
+        limits: Tuple[float, float] = None,
         population_size: int = 100,
         exploration: float = 1.0,
     ) -> None:
         super().__init__(objective_function, population_size)
 
         # Setting up the initial mean and fixed covariance
-        self.best = initial_best
+        self.best = initial_best or torch.rand(solution_length)
         self.covar = exploration * torch.eye(solution_length)
 
         # Setting up the population's distribution

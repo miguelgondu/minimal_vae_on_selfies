@@ -24,3 +24,6 @@ data/processed/SMALL-CID-SELFIES-20
 
 # Ignores the barplot script
 barplot.py
+
+# Ignores lighning logs
+lightning_logs/

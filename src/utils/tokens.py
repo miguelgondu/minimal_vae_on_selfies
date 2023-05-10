@@ -2,12 +2,14 @@
 A set of utilities to transform SELFIE strings into tokens and vice versa.
 """
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Union
 
 import json
 import re
 
 import torch
+
+from models.vae import VAESelfies
 
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 
@@ -101,17 +103,49 @@ def from_selfie_to_tensor(
     return from_ids_to_tensor(ids, token_dict, device=device)
 
 
-def from_tensor_to_selfie(x: torch.Tensor, tokens_dict: Dict[str, int]) -> str:
+def from_tensor_to_selfie(
+    x: torch.Tensor, tokens_dict: Dict[str, int]
+) -> Union[str, List[str]]:
     """
-    Returns a selfie string from a tensor of one-hot encodings.
+    Returns a selfie string from a tensor of one-hot encodings,
+    assuming that the class is in the last dimension of the tensor.
     """
     # Get the inverse of the tokens_dict
     inv_tokens_dict = {v: k for k, v in tokens_dict.items()}
 
     # Get the indices of the maximum values
     indices = torch.argmax(x, dim=-1).squeeze()
-    selfie = "".join(
-        [inv_tokens_dict[index.item()] for index in indices if index.item() != 0]
-    )
+
+    # At this point, this tensor is either [20] or [b, 20]
+    if len(indices.shape) == 1:
+        # We're only dealing with one sample
+        selfie = "".join(
+            [inv_tokens_dict[index.item()] for index in indices if index.item() != 0]
+        )
+        return selfie
+    else:
+        selfies = [
+            "".join(
+                [
+                    inv_tokens_dict[index.item()]
+                    for index in indices[i]
+                    if index.item() != 0
+                ]
+            )
+            for i in range(indices.shape[0])
+        ]
+        return selfies
+
+
+def from_latent_code_to_selfie(z: torch.Tensor, vae: VAESelfies) -> str:
+    """
+    Decodes the latent code z into a selfie string.
+    """
+    with torch.no_grad():
+        # Decode the latent code
+        x = vae.decode(z).probs
+
+        # Convert the tensor to a selfie string
+        selfie = from_tensor_to_selfie(x, vae.tokens_dict)
 
     return selfie

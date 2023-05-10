@@ -123,7 +123,7 @@ def visualize_a_random_walk(
     # Defining the saving paths for images
     IMGS_DIR = ROOT_DIR / "data" / "figures"
     IMGS_DIR.mkdir(exist_ok=True, parents=True)
-    selfie_to_png(aspirin_selfie, IMGS_DIR / "aspirin_0.png")
+    selfie_to_png(aspirin_selfie, IMGS_DIR / "aspirin_0.png", width=300, height=300)
 
     # Computing the one-hot representation of Aspirin
     x = from_selfie_to_tensor(aspirin_selfie, model.tokens_dict)
@@ -149,7 +149,7 @@ def visualize_a_random_walk(
             print(selfie, qed(Chem.MolFromSmiles(sf.decoder(selfie))))
 
             # Draw the molecule
-            selfie_to_png(selfie, IMGS_DIR / f"aspirin_{i+1}.png")
+            selfie_to_png(selfie, IMGS_DIR / f"aspirin_{i+1}.png", width=300, height=300)
 
 
 if __name__ == "__main__":
@@ -171,5 +171,5 @@ if __name__ == "__main__":
 
     model.eval()
 
-    unconditioned_samples_from_latent_space(model)
-    # visualize_a_random_walk(model, noise_scale=0.05)
+    # unconditioned_samples_from_latent_space(model)
+    visualize_a_random_walk(model, noise_scale=0.05)

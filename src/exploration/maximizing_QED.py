@@ -1,7 +1,23 @@
 """
-In this script, we deploy evolutionary strategies
-with the aim of maximizing the QED of molecules
+In this script, we deploy evolutionary strategies [1]
+with the aim of maximizing the QED [2] of molecules
 in the latent space of our VAESelfies.
+
+QED stands for "Quantitative Estimate of Drug-likeness", and it
+measures whether a compound lies in a certain range for molecular
+properties such as weight, hydrophobicity, and polarity. This
+quantity is a continous implementation of Lipinski's rule of five.
+
+QED(molecule) is always between 0 and 1, with 0 meaning
+that the molecule is very unlikely to be drug-like and
+1 the opposite.
+
+[1] Benchmarking Evoltuinary Strategies and Bayesian Optimization,
+    Najarro & González-Duque, 2023.
+    https://github.com/real-itu/benchmarking_evolution_and_bo
+
+[2] Quantifying the chemical beauty of drugs, Bickerton et al. (2012)
+    https://pubmed.ncbi.nlm.nih.gov/22270643/
 """
 from typing import Dict
 from pathlib import Path
@@ -73,16 +89,27 @@ def random_search(n_samples: int):
         json.dump(results, fp)
 
 
-def running_latent_space_evolutionary_strategy(
+def running_latent_space_evolutionary_strategy_QED(
     evolutionary_strategy: EvolutionaryStrategy,
     n_generations: int = 100,
     population_size: int = 50,
     exploration: float = 0.1,
 ) -> Dict[str, float]:
     """
-    Implements CMA-ES in the latent space of our VAESelfies
-    model. It uses MolSkill to evaluate the molecules, and
-    thus finds molecules that maximize "chemist's intuitions".
+    Runs the given Evolutionary Strategy in the latent space of
+    our VAESelfies model. It uses the Quantitative Estimate of
+    Drug-likeness (QED, see [1]) to evaluate the molecules.
+
+    In short, the QED measures whether a compound lies in a certain
+    range for molecular properties such as weight, hydrophobicity,
+    and polarity.
+
+    QED(molecule) is always between 0 and 1, with 0
+    meaning that the molecule is very unlikely to be drug-like and
+    1 the opposite.
+
+    [1] Quantifying the chemical beauty of drugs, Bickerton et al. (2012)
+        https://pubmed.ncbi.nlm.nih.gov/22270643/
     """
     # Loads model to define the objective function
     # for our CMA-ES
@@ -93,8 +120,13 @@ def running_latent_space_evolutionary_strategy(
     # Defines the objective function
     def objective_function(z: torch.Tensor) -> torch.Tensor:
         """
-        TODO: what happens if there's a decoder error?
-        I guess we should be filling those zs with 0.0
+        The closure function that we will pass to our
+        evolutionary strategy. It takes a batch of
+        latent codes and returns a batch of scores.
+
+        In the process, it checks whether the molecules
+        are valid, and if not, it assigns them a score
+        of torch.nan.
         """
         # Decode latent codes
         selfie_probs = vae.decode(z).probs
@@ -161,10 +193,10 @@ def running_latent_space_evolutionary_strategy(
 
 
 if __name__ == "__main__":
-    # running_latent_space_evolutionary_strategy(CMA_ES, n_generations=100)
-    running_latent_space_evolutionary_strategy(
+    running_latent_space_evolutionary_strategy_QED(CMA_ES, n_generations=100)
+    running_latent_space_evolutionary_strategy_QED(
         SimpleEvolutionStrategy, n_generations=100
     )
-    running_latent_space_evolutionary_strategy(PGPE, n_generations=100)
-    running_latent_space_evolutionary_strategy(SNES, n_generations=100)
-    # random_search(100 * 50)
+    running_latent_space_evolutionary_strategy_QED(PGPE, n_generations=100)
+    running_latent_space_evolutionary_strategy_QED(SNES, n_generations=100)
+    random_search(100 * 50)

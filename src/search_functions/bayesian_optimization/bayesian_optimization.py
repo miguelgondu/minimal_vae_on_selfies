@@ -3,7 +3,6 @@ Let's benchmark against simple B.O.
 """
 
 from typing import Tuple, Callable
-from matplotlib import pyplot as plt
 
 import torch
 
@@ -16,8 +15,6 @@ from botorch.optim import optimize_acqf
 
 from gpytorch.mlls import ExactMarginalLogLikelihood
 
-# from utils.visualization.evolutionary_strategies import plot_algorithm
-# from utils.visualization.bayesian_optimization import plot_prediction, plot_acquisition
 from utils.wrappers.counters import counted
 
 # torch.set_default_dtype(torch.float64)
@@ -61,16 +58,7 @@ class BayesianOptimization:
     def get_trace(self) -> Tuple[torch.Tensor, torch.Tensor]:
         return self.trace, self.objective_values
 
-    def step(
-        self,
-        n_points_in_acq_grid: int = 400,
-        ax_for_prediction: plt.Axes = None,
-        ax_for_acquisition: plt.Axes = None,
-        colorbar_limits_for_prediction: Tuple[float, float] = (None, None),
-        cmap_prediction: str = None,
-        cmap_acquisition: str = None,
-        plot_colorbar_in_acquisition: bool = False,
-    ):
+    def step(self, n_points_in_acq_grid: int = 400):
         # Defining the Gaussian Process
         kernel = self.kernel()
         model = SingleTaskGP(self.trace, self.objective_values, covar_module=kernel)
@@ -109,29 +97,6 @@ class BayesianOptimization:
                 raw_samples=1024,
             )
             candidate = candidate[0]
-
-        # Visualize the prediction
-        if ax_for_prediction is not None:
-            plot_prediction(
-                model=model,
-                ax=ax_for_prediction,
-                limits=self.limits,
-                z=self.trace,
-                candidate=candidate,
-                colorbar_limits=colorbar_limits_for_prediction,
-                cmap=cmap_prediction,
-            )
-
-        if ax_for_acquisition is not None:
-            plot_acquisition(
-                acq_function=acquisiton_funciton,
-                ax=ax_for_acquisition,
-                limits=self.limits,
-                z=self.trace,
-                candidate=candidate,
-                cmap=cmap_acquisition,
-                plot_colorbar=plot_colorbar_in_acquisition,
-            )
 
         # Evaluate the obj. function in this one, and append to
         # the trace.

@@ -104,9 +104,9 @@ def running_latent_space_evolutionary_strategy(
     exploration: float = 0.1,
 ) -> Dict[str, float]:
     """
-    Implements CMA-ES in the latent space of our VAESelfies
-    model. It uses MolSkill to evaluate the molecules, and
-    thus finds molecules that maximize "chemist's intuitions".
+    Implements a given Evolutionary Strategy in the latent space
+    of our VAESelfies model. It uses MolSkill to evaluate the
+    molecules, and thus finds molecules that maximize "chemist's intuitions".
     """
     # Loads model to define the objective function
     # for our CMA-ES
@@ -120,8 +120,13 @@ def running_latent_space_evolutionary_strategy(
     # Defines the objective function
     def objective_function(z: torch.Tensor) -> torch.Tensor:
         """
-        TODO: what happens if there's a decoder error?
-        I guess we should be filling those zs with 0.0
+        The closure function that we will pass to our
+        evolutionary strategy. It takes a batch of
+        latent codes and returns a batch of scores.
+
+        In the process, it checks whether the molecules
+        are valid, and if not, it assigns them a score
+        of 0.0 or torch.nan.
         """
         # Decode latent codes
         selfie_probs = vae.decode(z).probs
@@ -139,7 +144,7 @@ def running_latent_space_evolutionary_strategy(
                 valid_smiles.append((i, smile))
             else:
                 unvalid_smiles.append((i, smile))
-        
+
         # Compute MolSkill scores, and clean NaNs
         valid_scores = torch.Tensor(scorer.score(valid_smiles))
         valid_scores[valid_scores == torch.nan] = 0.0
@@ -187,8 +192,6 @@ def running_latent_space_evolutionary_strategy(
 
 
 if __name__ == "__main__":
-    # molskill_on_simple_example()
-
     # Running an evolutionary strategy on the latent space
     n_generations = 20
     population_size = 50

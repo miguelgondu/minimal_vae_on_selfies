@@ -9,7 +9,7 @@ The structure of each of these files is a list of dictionaries,
     # The result for the first generation
     {
         "selfie": ...,  # The SELFIE string
-        "score": ...    # Its MolSkill score
+        "score": ...    # Its score (either MolSkill or QED)
     },
     ...
 ]

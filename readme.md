@@ -109,7 +109,8 @@ After running `src/training/training_models.py`, a trained model is saved in `da
 
 ## Some TO-DOs
 
-- [ ] Latent space optimization using CMA-ES and BO.
+- [x] Latent space optimization of MolSkill and QED using Evolutionary Strategies.
+- [ ] Latent space optimization of MolSkill and QED using Bayesian Optimization.
 - [ ] Include other datasets, like GuacaMol or ZINC20.
 - [ ] Better models, like an autoregressive VAE using LSTMs, or a transformer.
 - [ ] Scalable tokenizing using MolGen's tokenizer.

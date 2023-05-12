@@ -42,7 +42,7 @@ This figure shows the size of these datasets **in log-scale**.
 
 ![Dataset sizes](static/barplot.jpg)
 
-We can also take a look at the distribution of sequence lengths. The following plot shows how most of the mass of token lengths is concentrated below 91 tokens.
+We can also take a look at the distribution of sequence lengths. The following plot shows how most of the mass of token lengths (99%) is concentrated below 221 tokens. We truncate at 320, but the maximum sequence length is 1840.
 
 ![Lengths of sequences](static/hist_of_lengths_CID-SELFIES.jpg)
 

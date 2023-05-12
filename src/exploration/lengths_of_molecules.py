@@ -52,21 +52,28 @@ def plot_histogram(dataset_name: str = "CID-SELFIES"):
     ) as fp:
         lengths = json.load(fp)
 
+    # Sort items by key, and store them in a list
+    lengths = [(int(k), v) for k, v in lengths.items()]
+    lengths = sorted(lengths, key=lambda x: x[0])
+
+    sequence_lengths = np.array([k for k, _ in lengths])
+    sequence_counts = np.array([v for _, v in lengths])
+
     # Plot the histogram
     # sns.set_theme()
     fig, (ax_barplot, ax_cummulative) = plt.subplots(
         2, 1, figsize=(1 * 6, 2 * 4), sharex=True
     )
     sns.barplot(
-        x=np.array(list(lengths.keys())),
-        y=np.array(list(lengths.values())),
+        x=sequence_lengths,
+        y=sequence_counts,
         ax=ax_barplot,
     )
     ax_barplot.set_ylabel("Count")
 
     # Plot the cummulative histogram
-    cummulative = np.cumsum(np.array(list(lengths.values())))
-    sns.lineplot(x=np.array(list(lengths.keys())), y=cummulative, ax=ax_cummulative)
+    cummulative = np.cumsum(sequence_counts)
+    sns.lineplot(x=sequence_lengths, y=cummulative, ax=ax_cummulative)
     ax_cummulative.set_ylabel("Cummulative count")
     ax_cummulative.set_xlabel("Length in tokens")
 
@@ -77,17 +84,20 @@ def plot_histogram(dataset_name: str = "CID-SELFIES"):
     ax_barplot.set_xticklabels(xticks[::100])
 
     # Determining where 99% of the data is
-    count_pairs_ordered = sorted(lengths.items(), key=lambda x: x[0])
-    total_count = np.sum(np.array(list(lengths.values())))
+    total_count = np.sum(sequence_counts)
     cummulative_count = 0
-    for i, (length, count) in enumerate(count_pairs_ordered):
-        cummulative_count += count
+    for seq_length, seq_count in zip(sequence_lengths, sequence_counts):
+        cummulative_count += seq_count
         if cummulative_count / total_count > 0.99:
-            print(f"99% of the data is in molecules of length  <= {length}")
+            print(f"99% of the data is in molecules of length  <= {seq_length}")
             break
+    ax_barplot.set_xlim([0, seq_length + 100])
+
+    # Print the length of the longest sequence
+    print(f"The longest sequence has length {sequence_lengths[-1]}")
 
     # Drawing a vertical line at the 99% mark
-    ax_cummulative.axvline(x=length, color="red", linestyle="--")
+    ax_cummulative.axvline(x=seq_length, color="red", linestyle="--")
 
     fig.savefig(
         ROOT_DIR / "static" / f"hist_of_lengths_{dataset_name}.jpg",

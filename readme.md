@@ -42,7 +42,11 @@ This figure shows the size of these datasets **in log-scale**.
 
 ![Dataset sizes](static/barplot.jpg)
 
-Ideally, we would also include other datasets like ZINC20[^5], or GuacaMol[^6].
+We can also take a look at the distribution of sequence lengths. The following plot shows how most of the mass of token lengths is concentrated below 91 tokens.
+
+![Lengths of sequences](static/hist_of_lengths_CID-SELFIES.jpg)
+
+Ideally, we would also include other datasets like ZINC20[^5], or GuacaMol[^6]. This is included as a TODO at the end of this repo.
 
 ## Tokenizing
 
@@ -110,10 +114,12 @@ After running `src/training/training_models.py`, a trained model is saved in `da
 ## Some TO-DOs
 
 - [x] ~~Latent space optimization of MolSkill and QED using Evolutionary Strategies.~~
+- [x] ~~Assess the lengths of all molecules in `CID-SELFIES`~~
+- [ ] Scalable tokenizing using MolGen's tokenizer.
+- [ ] Training on all of `SMALL-CID-SELFIES-20`.
 - [ ] Latent space optimization of MolSkill and QED using Bayesian Optimization.
 - [ ] Include other datasets, like GuacaMol or ZINC20.
 - [ ] Better models, like an autoregressive VAE using LSTMs, or a transformer.
-- [ ] Scalable tokenizing using MolGen's tokenizer.
 
 ## Cite this repository!
 

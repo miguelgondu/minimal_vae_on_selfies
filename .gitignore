@@ -28,3 +28,6 @@ barplot.py
 
 # Ignores lighning logs
 lightning_logs/
+
+# Ignores a plot
+losses.jpg

@@ -73,7 +73,6 @@ def train_model(
     batch_size: int = 256,
     dataset_name: str = "TINY-CID-SELFIES",
     max_length: int = 50,
-    latent_dim: int = 64,
     lr: float = 1e-3,
 ) -> Tuple[AutoencoderSelfies, float]:
     """
@@ -121,7 +120,9 @@ def train_model(
         if epoch == 0 or testing_loss < best_testing_loss:
             best_testing_loss = testing_loss
             torch.save(
-                model.state_dict(), MODELS_DIR / f"{model_name}_{dataset_name}.pt"
+                model.state_dict(),
+                MODELS_DIR
+                / f"{model_name}_{dataset_name}_latent_dim_{model.latent_dim}.pt",
             )
 
     print("Best testing loss: ", best_testing_loss)
@@ -141,7 +142,7 @@ if __name__ == "__main__":
     model = VAESelfies(
         dataset_name="TINY-CID-SELFIES-20",
         max_token_length=20,
-        latent_dim=64,
+        latent_dim=2,
         device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
     )
 
@@ -151,6 +152,5 @@ if __name__ == "__main__":
         batch_size=256,
         dataset_name="TINY-CID-SELFIES-20",
         max_length=20,
-        latent_dim=64,
         lr=1e-3,
     )

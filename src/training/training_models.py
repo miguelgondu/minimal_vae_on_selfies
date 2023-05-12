@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 from torch.utils.data.dataloader import DataLoader
 import torch
 
+from tqdm import tqdm
+
 from utils.data import load_dataloaders
 
 from models.ae import AutoencoderSelfies
@@ -30,7 +32,13 @@ def training_loop(
     Runs an epoch of training, returing the average training loss.
     """
     losses = []
-    for (batch,) in training_loader:
+    for (batch,) in tqdm(training_loader):
+        # The batch contains the inputs to the sequence as token ids,
+        # so we need to transform them to one-hot encodings.
+        batch = torch.nn.functional.one_hot(
+            batch.to(torch.int64), num_classes=len(model.tokens_dict)
+        ).to(torch.get_default_dtype())
+
         # Reset the gradients
         optimizer.zero_grad()
 
@@ -57,7 +65,13 @@ def testing_loop(
     """
     losses = []
     with torch.no_grad():
-        for (batch,) in testing_loader:
+        for (batch,) in tqdm(testing_loader):
+            # The batch contains the inputs to the sequence as token ids,
+            # so we need to transform them to one-hot encodings.
+            batch = torch.nn.functional.one_hot(
+                batch.to(torch.int64), num_classes=len(model.tokens_dict)
+            ).to(torch.get_default_dtype())
+
             # Compute the loss (forward pass is inside)
             loss = model.loss_function(batch)
 
@@ -72,9 +86,9 @@ def train_model(
     max_epochs: int = 100,
     batch_size: int = 256,
     dataset_name: str = "TINY-CID-SELFIES",
-    max_length: int = 50,
+    max_token_length: int = 50,
     lr: float = 1e-3,
-) -> Tuple[AutoencoderSelfies, float]:
+) -> Tuple[Union[AutoencoderSelfies, VAESelfies], float]:
     """
     Trains an autoencoder on the provided dataset.
     """
@@ -87,7 +101,11 @@ def train_model(
 
     # Load the data
     training_loader, testing_loader = load_dataloaders(
-        dataset_name=dataset_name, batch_size=batch_size, max_token_length=max_length
+        dataset_name=dataset_name,
+        batch_size=batch_size,
+        max_token_length=max_token_length,
+        as_onehot=False,
+        as_token_ids=True,
     )
 
     # Define the optimizer
@@ -134,23 +152,34 @@ def train_model(
     ax.set_xlabel("Epoch")
     ax.set_ylabel("Loss")
     ax.legend()
-    fig.savefig("losses.jpg")
+    fig.savefig(f"losses_{dataset_name}.jpg")
 
 
 if __name__ == "__main__":
+    # Hyperparameters for this training
+    dataset_name = "SMALL-CID-SELFIES-20"
+    max_token_length = int(dataset_name.split("-")[-1])
+    latent_dim = 64
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    batch_size = 512
+    lr = 1e-3
+    max_epochs = 200
+
+    print("Training on device: ", device)
+
     # Define the model
     model = VAESelfies(
-        dataset_name="TINY-CID-SELFIES-20",
-        max_token_length=20,
-        latent_dim=2,
-        device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+        dataset_name=dataset_name,
+        max_token_length=max_token_length,
+        latent_dim=latent_dim,
+        device=device,
     )
 
     train_model(
         model=model,
-        max_epochs=200,
-        batch_size=256,
-        dataset_name="TINY-CID-SELFIES-20",
-        max_length=20,
-        lr=1e-3,
+        max_epochs=max_epochs,
+        batch_size=batch_size,
+        dataset_name=dataset_name,
+        max_token_length=max_token_length,
+        lr=lr,
     )

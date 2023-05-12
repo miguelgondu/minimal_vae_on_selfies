@@ -37,6 +37,13 @@ class VAESelfies(nn.Module):
         self.device = device
 
         # Load the token dictionary
+        assert (
+            ROOT_DIR / "data" / "processed" / f"tokens_{dataset_name}.json"
+        ).exists(), (
+            f"tokens_{dataset_name}.json does not exist in "
+            f"{ROOT_DIR / 'data' / 'processed'}! Did you forget to run "
+            f"src/tokenizing/compute_tokens.py for this dataset?"
+        )
         with open(
             ROOT_DIR / "data" / "processed" / f"tokens_{dataset_name}.json", "r"
         ) as fp:

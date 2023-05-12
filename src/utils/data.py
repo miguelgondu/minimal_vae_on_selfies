@@ -46,6 +46,8 @@ def load_dataloaders(
     max_token_length: int = 20,
     train_ratio: float = 0.8,
     random_seed: int = 42,
+    as_onehot: bool = True,
+    as_token_ids: bool = False,
 ) -> Tuple[DataLoader, DataLoader]:
     """
     Loads the dataset based on the dataset name, returing
@@ -91,19 +93,24 @@ def load_dataloaders(
     # Build the one-hot vectors
     # TODO: This doesn't scale, and is a silly way
     # of creating the one-hot vectors.
-    train_data = torch.zeros(
-        (len(train_df), max_token_length, len(tokens_dict)), dtype=torch.float32
-    )
-    test_data = torch.zeros(
-        (len(test_df), max_token_length, len(tokens_dict)), dtype=torch.float32
-    )
+    if as_onehot:
+        train_data = torch.zeros(
+            (len(train_df), max_token_length, len(tokens_dict)), dtype=torch.float32
+        )
+        test_data = torch.zeros(
+            (len(test_df), max_token_length, len(tokens_dict)), dtype=torch.float32
+        )
 
-    # Populate the one-hot vectors
-    for i, tokens in enumerate(train_df["tokens"]):
-        train_data[i, torch.arange(len(tokens)), tokens] = 1.0
+        # Populate the one-hot vectors
+        for i, tokens in enumerate(train_df["tokens"]):
+            train_data[i, torch.arange(len(tokens)), tokens] = 1.0
 
-    for i, tokens in enumerate(test_df["tokens"]):
-        test_data[i, torch.arange(len(tokens)), tokens] = 1.0
+        for i, tokens in enumerate(test_df["tokens"]):
+            test_data[i, torch.arange(len(tokens)), tokens] = 1.0
+
+    elif as_token_ids:
+        train_data = torch.Tensor(train_df["tokens"].values.tolist())
+        test_data = torch.Tensor(test_df["tokens"].values.tolist())
 
     # Turn them into tensor datasets
     train_data = TensorDataset(train_data)

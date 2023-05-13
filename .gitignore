@@ -30,4 +30,4 @@ barplot.py
 lightning_logs/
 
 # Ignores a plot
-losses.jpg
+losses*.jpg

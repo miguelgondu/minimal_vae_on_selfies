@@ -3,6 +3,8 @@ A set of utilities to draw molecules from SELFIE and SMILES strings,
 using RDKit and cairosvg.
 """
 from pathlib import Path
+from PIL import Image
+import io
 
 from rdkit import Chem
 from rdkit.Chem.Draw import rdMolDraw2D
@@ -13,7 +15,11 @@ import selfies as sf
 
 
 def selfie_to_png(
-    selfie: str, save_path: Path, width: int = 200, height: int = 200, title: str = None
+    selfie: str,
+    save_path: Path = None,
+    width: int = 200,
+    height: int = 200,
+    title: str = None,
 ):
     """
     Save a molecule (specified as a selfie string) as png file.
@@ -43,5 +49,35 @@ def selfie_to_png(
             f'<text x="{width // 3}" y="{height - 20}" font-size="15" fill="black">{title}</text></svg>',
         )
 
-    # Export to png
-    cairosvg.svg2png(bytestring=svg.encode(), write_to=str(save_path))
+    # Export to png, and return it as a bytestring
+    return cairosvg.svg2png(bytestring=svg.encode(), write_to=save_path)
+
+
+def selfie_to_image(
+    selfie: str,
+    width: int = 200,
+    height: int = 200,
+    title: str = None,
+    strict: bool = True,
+) -> Image:
+    """
+    Tries to convert a selfie string to an image, and returns it as a PIL Image.
+
+    If the conversion fails, terminates with an error. But if strict is set to False, it returns a blank image instead.
+    """
+    try:
+        image_as_bytes = selfie_to_png(selfie, width=width, height=height, title=title)
+    except AssertionError as e:
+        if strict:
+            raise e
+        else:
+            # Create a blank image using Image
+            return Image.new("RGB", (width, height), (255, 255, 255))
+
+    return Image.open(io.BytesIO(image_as_bytes))
+
+
+if __name__ == "__main__":
+    SELFIES = "[C][C][C][C][C][Branch1][C][C][C][=Branch1][C][C][C][=Branch1][C][=Branch1][C][=O][O]"
+    image = selfie_to_image(SELFIES)
+    print(image)

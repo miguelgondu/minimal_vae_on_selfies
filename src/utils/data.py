@@ -48,6 +48,7 @@ def load_dataloaders(
     random_seed: int = 42,
     as_onehot: bool = True,
     as_token_ids: bool = False,
+    device: torch.device = torch.device("cpu"),
 ) -> Tuple[DataLoader, DataLoader]:
     """
     Loads the dataset based on the dataset name, returing
@@ -109,8 +110,8 @@ def load_dataloaders(
             test_data[i, torch.arange(len(tokens)), tokens] = 1.0
 
     elif as_token_ids:
-        train_data = torch.Tensor(train_df["tokens"].values.tolist())
-        test_data = torch.Tensor(test_df["tokens"].values.tolist())
+        train_data = torch.Tensor(train_df["tokens"].values.tolist()).to(device)
+        test_data = torch.Tensor(test_df["tokens"].values.tolist()).to(device)
 
     # Turn them into tensor datasets
     train_data = TensorDataset(train_data)

@@ -36,7 +36,8 @@ def training_loop(
         # The batch contains the inputs to the sequence as token ids,
         # so we need to transform them to one-hot encodings.
         batch = torch.nn.functional.one_hot(
-            batch.to(torch.int64), num_classes=len(model.tokens_dict)
+            batch.to(torch.int64),
+            num_classes=len(model.tokens_dict),
         ).to(torch.get_default_dtype())
 
         # Reset the gradients
@@ -69,7 +70,8 @@ def testing_loop(
             # The batch contains the inputs to the sequence as token ids,
             # so we need to transform them to one-hot encodings.
             batch = torch.nn.functional.one_hot(
-                batch.to(torch.int64), num_classes=len(model.tokens_dict)
+                batch.to(torch.int64),
+                num_classes=len(model.tokens_dict),
             ).to(torch.get_default_dtype())
 
             # Compute the loss (forward pass is inside)
@@ -88,6 +90,8 @@ def train_model(
     dataset_name: str = "TINY-CID-SELFIES",
     max_token_length: int = 50,
     lr: float = 1e-3,
+    early_stopping: bool = True,
+    max_patience: int = 15,
 ) -> Tuple[Union[AutoencoderSelfies, VAESelfies], float]:
     """
     Trains an autoencoder on the provided dataset.
@@ -106,6 +110,7 @@ def train_model(
         max_token_length=max_token_length,
         as_onehot=False,
         as_token_ids=True,
+        device=device,
     )
 
     # Define the optimizer
@@ -117,6 +122,9 @@ def train_model(
     # Saving the losses for plotting
     training_losses = []
     testing_losses = []
+
+    # Sets up patience for early stopping
+    patience = 0
 
     for epoch in range(max_epochs):
         # Run a training epoch
@@ -143,16 +151,27 @@ def train_model(
                 / f"{model_name}_{dataset_name}_latent_dim_{model.latent_dim}.pt",
             )
 
-    print("Best testing loss: ", best_testing_loss)
+        # Early stopping
+        if early_stopping:
+            if testing_loss > best_testing_loss:
+                patience += 1
+                if patience >= max_patience:
+                    print("Stopping early!")
+                    break
+            else:
+                patience = 0
 
-    # Plotting the losses
-    fig, ax = plt.subplots(1, 1, figsize=(7, 7))
-    ax.plot(range(len(training_losses)), training_losses, label="Training loss")
-    ax.plot(range(len(testing_losses)), testing_losses, label="Testing loss")
-    ax.set_xlabel("Epoch")
-    ax.set_ylabel("Loss")
-    ax.legend()
-    fig.savefig(f"losses_{dataset_name}.jpg")
+        print("Best testing loss: ", best_testing_loss)
+
+        # Plotting the losses
+        fig, ax = plt.subplots(1, 1, figsize=(7, 7))
+        ax.plot(range(len(training_losses)), training_losses, label="Training loss")
+        ax.plot(range(len(testing_losses)), testing_losses, label="Testing loss")
+        ax.set_xlabel("Epoch")
+        ax.set_ylabel("Loss")
+        ax.legend()
+        fig.savefig(f"losses_{dataset_name}_{model.latent_dim}_{batch_size}.jpg")
+        plt.close(fig)
 
 
 if __name__ == "__main__":
@@ -161,7 +180,7 @@ if __name__ == "__main__":
     max_token_length = int(dataset_name.split("-")[-1])
     latent_dim = 64
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    batch_size = 512
+    batch_size = 1024
     lr = 1e-3
     max_epochs = 200
 
@@ -182,4 +201,6 @@ if __name__ == "__main__":
         dataset_name=dataset_name,
         max_token_length=max_token_length,
         lr=lr,
+        early_stopping=True,
+        max_patience=15,
     )

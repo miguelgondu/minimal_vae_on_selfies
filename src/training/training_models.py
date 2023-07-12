@@ -176,9 +176,9 @@ def train_model(
 
 if __name__ == "__main__":
     # Hyperparameters for this training
-    dataset_name = "SMALL-CID-SELFIES-20"
+    dataset_name = "TINY-CID-SELFIES-20"
     max_token_length = int(dataset_name.split("-")[-1])
-    latent_dim = 64
+    latent_dim = 2
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     batch_size = 1024
     lr = 1e-3

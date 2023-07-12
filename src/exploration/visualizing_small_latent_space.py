@@ -32,7 +32,7 @@ def plot_grid(
     n_rows=10,
     n_cols=10,
     ax=None,
-    return_imgs=False,
+    strict: bool = False,
 ):
     z1 = np.linspace(*x_lims, n_cols)
     z2 = np.linspace(*y_lims, n_rows)
@@ -40,11 +40,9 @@ def plot_grid(
     zs = np.array([[a, b] for a, b in product(z1, z2)])
 
     selfies_dist = model.decode(torch.from_numpy(zs).type(torch.float))
-    selfies = from_tensor_to_selfie(selfies_dist.probs, model.tokens_dict)
 
-    images = np.array(
-        [np.asarray(selfie_to_image(selfie, strict=False)) for selfie in selfies]
-    )
+    selfies = from_tensor_to_selfie(selfies_dist.probs, model.tokens_dict)
+    images = [selfie_to_image(selfie, strict=strict) for selfie in selfies]
     img_dict = {(z[0], z[1]): img for z, img in zip(zs, images)}
 
     positions = {
@@ -63,22 +61,21 @@ def plot_grid(
     if ax is not None:
         ax.imshow(final_img, extent=[*x_lims, *y_lims])
 
-    if return_imgs:
-        return final_img, images
-
     return final_img
 
 
 if __name__ == "__main__":
     # Some hyperparameters for the visualization
-    n_rows = 35
-    n_cols = 35
-    x_lims = (-5, 5)
-    y_lims = (-5, 5)
+    n_rows = 20
+    n_cols = 20
+    x_lims = (-2.5, 2.5)
+    y_lims = (-2.5, 2.5)
+
+    dataset_name = "TINY-TAIL-CID-SELFIES-20"
 
     # Load the model
     model = VAESelfies(
-        dataset_name="TINY-CID-SELFIES-20",
+        dataset_name=dataset_name,
         max_token_length=20,
         latent_dim=2,
         device=torch.device("cpu"),
@@ -88,16 +85,28 @@ if __name__ == "__main__":
             ROOT_DIR
             / "data"
             / "trained_models"
-            / "VAESelfies_TINY-CID-SELFIES-20_latent_dim_2.pt",
+            / f"VAESelfies_{dataset_name}_latent_dim_2.pt",
             map_location=torch.device("cpu"),
         )
     )
 
     fig, ax = plt.subplots(1, 1, figsize=(n_rows, n_cols))
-    plot_grid(model, x_lims=x_lims, y_lims=y_lims, n_rows=n_rows, n_cols=n_cols, ax=ax)
+    plot_grid(
+        model,
+        x_lims=x_lims,
+        y_lims=y_lims,
+        n_rows=n_rows,
+        n_cols=n_cols,
+        ax=ax,
+        strict=True,
+    )
     ax.axis("off")
+    fig.tight_layout()
     fig.savefig(
-        ROOT_DIR / "data" / "figures" / "latent_space_TINY-CID-SELFIES-20_dim_2.png",
+        ROOT_DIR
+        / "data"
+        / "figures"
+        / f"latent_space_{dataset_name}_dim_2_{n_rows}_x_{n_cols}.png",
         dpi=300,
         bbox_inches="tight",
     )

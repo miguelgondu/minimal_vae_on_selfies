@@ -29,10 +29,10 @@ class VAESelfies(nn.Module):
         self.max_token_length = max_token_length
         self.latent_dim = latent_dim
 
-        assert max_token_length == int(dataset_name.split("-")[-1]), (
-            f"max_token_length ({max_token_length}) must match the "
-            f"dataset_name's token size ({dataset_name})!"
-        )
+        # assert max_token_length == int(dataset_name.split("-")[-1]), (
+        #     f"max_token_length ({max_token_length}) must match the "
+        #     f"dataset_name's token size ({dataset_name})!"
+        # )
 
         self.device = device
 

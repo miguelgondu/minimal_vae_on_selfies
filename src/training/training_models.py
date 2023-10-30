@@ -82,8 +82,9 @@ def train_model(
     model_name = model.__class__.__name__
 
     # Define the device
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model.to(device)
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # model.to(device)
+    print(f"Training on {model.device}.")
 
     # Load the data
     training_loader, testing_loader = load_dataloaders(
@@ -143,7 +144,7 @@ if __name__ == "__main__":
         dataset_name="TINY-CID-SELFIES-20",
         max_token_length=20,
         latent_dim=2,
-        device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+        device=torch.device("mps" if torch.backends.mps.is_available() else "cpu"),
     )
 
     train_model(

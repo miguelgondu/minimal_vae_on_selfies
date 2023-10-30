@@ -9,6 +9,8 @@ import re
 
 import torch
 
+import selfies as sf
+
 from models.vae import VAESelfies
 
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
@@ -20,7 +22,7 @@ def from_selfie_to_tokens(selfie: str) -> List[str]:
     occurences of [.*?] in the string (i.e. whatever
     is between square brackes).
     """
-    return list(re.findall(r"\[.*?\]", selfie))
+    return list(sf.split_selfies(selfie))
 
 
 def from_tokens_to_ids(

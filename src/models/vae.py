@@ -4,14 +4,19 @@ SELFIES data. It is originally designed to handle the
 TINY-CID-SELFIES-20 datasets, but it could be used on the 
 SMALL-CID-SELFIES-20 with a little bit of work.
 """
-from typing import Tuple
+from typing import Tuple, Dict
 from pathlib import Path
+from itertools import product
 import json
+
+import numpy as np
 
 import torch
 import torch.nn as nn
 
 from torch.distributions import Normal, Categorical
+
+from utils.visualization import selfie_to_numpy_image_array
 
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 
@@ -127,3 +132,70 @@ class VAESelfies(nn.Module):
 
         # Computes the ELBO loss
         return (kl_div + recon_loss).mean()
+
+    def plot_grid(
+        self,
+        x_lims=(-5, 5),
+        y_lims=(-5, 5),
+        n_rows=10,
+        n_cols=10,
+        sample=False,
+        ax=None,
+    ) -> np.ndarray:
+        """
+        A helper function which plots, as images, the levels in a
+        fine grid in latent space, specified by the provided limits,
+        number of rows and number of columns.
+
+        The figure can be plotted in a given axis; if none is passed,
+        a new figure is created.
+
+        This function also returns the final image (which is the result
+        of concatenating all the individual decoded images) as a numpy
+        array.
+        """
+        img_width_and_height = 200
+        z1 = np.linspace(*x_lims, n_cols)
+        z2 = np.linspace(*y_lims, n_rows)
+
+        zs = np.array([[a, b] for a, b in product(z1, z2)])
+
+        selfies_dist = self.decode(torch.from_numpy(zs).type(torch.float))
+        if sample:
+            selfies_as_ints = selfies_dist.sample()
+        else:
+            selfies_as_ints = selfies_dist.probs.argmax(dim=-1)
+
+        inverse_alphabet: Dict[int, str] = {v: k for k, v in self.tokens_dict.items()}
+        selfies_strings = [
+            "".join([inverse_alphabet[i] for i in row])
+            for row in selfies_as_ints.numpy(force=True)
+        ]
+
+        selfies_as_images = np.array(
+            [
+                selfie_to_numpy_image_array(
+                    selfie, width=img_width_and_height, height=img_width_and_height
+                )
+                for selfie in selfies_strings
+            ]
+        )
+        img_dict = {(z[0], z[1]): img for z, img in zip(zs, selfies_as_images)}
+
+        positions = {
+            (x, y): (i, j) for j, x in enumerate(z1) for i, y in enumerate(reversed(z2))
+        }
+
+        pixels = img_width_and_height
+        final_img = np.zeros((n_cols * pixels, n_rows * pixels, 3))
+        for z, (i, j) in positions.items():
+            final_img[
+                i * pixels : (i + 1) * pixels, j * pixels : (j + 1) * pixels
+            ] = img_dict[z]
+
+        final_img = final_img.astype(int)
+
+        if ax is not None:
+            ax.imshow(final_img, extent=[*x_lims, *y_lims])
+
+        return final_img

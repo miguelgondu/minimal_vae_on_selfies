@@ -149,7 +149,9 @@ def visualize_a_random_walk(
             print(selfie, qed(Chem.MolFromSmiles(sf.decoder(selfie))))
 
             # Draw the molecule
-            selfie_to_png(selfie, IMGS_DIR / f"aspirin_{i+1}.png", width=300, height=300)
+            selfie_to_png(
+                selfie, IMGS_DIR / f"aspirin_{i+1}.png", width=300, height=300
+            )
 
 
 if __name__ == "__main__":

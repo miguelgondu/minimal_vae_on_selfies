@@ -6,12 +6,14 @@ import pandas as pd
 
 if __name__ == "__main__":
     ROOT_DIR = Path(__file__).parent.parent.parent.parent.resolve()
-    PROCESSED_DIR = ROOT_DIR / "experiments" / "assets" / "data" / "small_molecules" / "processed"
+    PROCESSED_DIR = (
+        ROOT_DIR / "experiments" / "assets" / "data" / "small_molecules" / "processed"
+    )
 
     # We load the smiles dataset
     with open(PROCESSED_DIR / "zinc250k_smiles.pkl", "rb") as fin:
         zinc250k = pickle.load(fin)
-    
+
     df = pd.DataFrame(zinc250k, columns=["SMILES"])
 
     # We load the selfies dataset

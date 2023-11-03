@@ -34,5 +34,6 @@ def test_model_loading():
 
     # prediction = model(selfies_as_one_hot)
 
+
 if __name__ == "__main__":
     test_model_loading()

@@ -12,7 +12,9 @@ if __name__ == "__main__":
     # The root of the project.
     ROOT_DIR = Path(__file__).parent.parent.parent.parent.resolve()
 
-    DATASET_DIR = ROOT_DIR / "experiments" / "assets" / "data" / "small_molecules" / "raw"
+    DATASET_DIR = (
+        ROOT_DIR / "experiments" / "assets" / "data" / "small_molecules" / "raw"
+    )
     DATASET_DIR.mkdir(parents=True, exist_ok=True)
 
     # Download the dataset.
@@ -21,4 +23,3 @@ if __name__ == "__main__":
     # Save the dataset.
     with open(DATASET_DIR / "zinc250k.pkl", "wb") as fout:
         pickle.dump(zinc250k, fout)
-

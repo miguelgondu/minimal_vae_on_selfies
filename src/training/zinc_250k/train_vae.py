@@ -18,12 +18,15 @@ def train_model(
     max_epochs: int = 100,
     batch_size: int = 256,
     lr: float = 1e-3,
+    overfit_to_a_single_batch: bool = False,
 ):
     # Defining the experiment's name
     experiment_name = "vae_on_zinc_250k"
 
     # Loading up the dataloaders
-    train_loader, test_loader = load_zinc_250k_dataloaders()
+    train_loader, test_loader = load_zinc_250k_dataloaders(
+        batch_size=batch_size, overfit_to_a_single_batch=overfit_to_a_single_batch
+    )
 
     # Define the optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
@@ -79,4 +82,4 @@ if __name__ == "__main__":
         device=torch.device("mps" if torch.backends.mps.is_available() else "cpu"),
     )
 
-    train_model(model, max_epochs=100, batch_size=256)
+    train_model(model, max_epochs=100, batch_size=256, overfit_to_a_single_batch=True)

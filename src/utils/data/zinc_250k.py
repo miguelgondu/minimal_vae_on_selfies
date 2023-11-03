@@ -41,7 +41,10 @@ def load_zinc_250k_alphabet() -> Dict[str, int]:
 
 
 def load_zinc_250k_dataloaders(
-    random_seed: int = 42, train_test_split: float = 0.8, batch_size: int = 256
+    random_seed: int = 42,
+    train_test_split: float = 0.8,
+    batch_size: int = 256,
+    overfit_to_a_single_batch: bool = False,
 ) -> Tuple[DataLoader, DataLoader]:
     """
     Returns a train-test split for the Zinc 250k dataset.
@@ -64,6 +67,11 @@ def load_zinc_250k_dataloaders(
     test_data = torch.from_numpy(one_hot_molecules[training_index:]).to(
         torch.get_default_dtype()
     )
+
+    # Overfit to a single batch if specified
+    if overfit_to_a_single_batch:
+        train_data = train_data[:batch_size]
+        test_data = test_data[:batch_size]
 
     # Building the datasets
     train_data = TensorDataset(train_data)

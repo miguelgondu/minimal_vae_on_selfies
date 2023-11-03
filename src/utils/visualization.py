@@ -68,6 +68,7 @@ def selfie_to_image(
 
     return s_img
 
+
 def selfie_to_numpy_image_array(
     selfie: str, width: int = 200, height: int = 200, title: str = None
 ) -> np.ndarray:

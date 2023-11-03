@@ -74,6 +74,7 @@ def train_model(
     dataset_name: str = "TINY-CID-SELFIES",
     max_length: int = 50,
     lr: float = 1e-3,
+    overfit_to_a_single_batch: bool = False,
 ) -> Tuple[AutoencoderSelfies, float]:
     """
     Trains an autoencoder on the provided dataset.
@@ -88,7 +89,10 @@ def train_model(
 
     # Load the data
     training_loader, testing_loader = load_dataloaders(
-        dataset_name=dataset_name, batch_size=batch_size, max_token_length=max_length
+        dataset_name=dataset_name,
+        batch_size=batch_size,
+        max_token_length=max_length,
+        overfit_to_a_single_batch=overfit_to_a_single_batch,
     )
 
     # Define the optimizer
@@ -154,4 +158,5 @@ if __name__ == "__main__":
         dataset_name="TINY-CID-SELFIES-20",
         max_length=20,
         lr=1e-3,
+        overfit_to_a_single_batch=False,
     )

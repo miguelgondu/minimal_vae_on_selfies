@@ -43,7 +43,7 @@ if __name__ == "__main__":
     sorted_tokens = sorted(token_counts.items(), key=lambda x: x[1], reverse=True)
 
     # Adding the padding token
-    tokens = ["[<PAD>]"] + [k for k, _ in sorted_tokens]
+    tokens = ["[nop]"] + [k for k, _ in sorted_tokens]
 
     # Saving the tokens
     with open(PROCESSED_DATA_PATH / f"tokens_{dataset_name}.json", "w") as fp:

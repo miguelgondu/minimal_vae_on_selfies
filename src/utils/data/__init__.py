@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader, TensorDataset
 
 from utils.tokens import from_selfie_to_ids
 
-ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
+ROOT_DIR = Path(__file__).parent.parent.parent.parent.resolve()
 
 
 def load_dataset_as_dataframe(
@@ -46,6 +46,7 @@ def load_dataloaders(
     max_token_length: int = 20,
     train_ratio: float = 0.8,
     random_seed: int = 42,
+    overfit_to_a_single_batch: bool = False,
 ) -> Tuple[DataLoader, DataLoader]:
     """
     Loads the dataset based on the dataset name, returing
@@ -104,6 +105,11 @@ def load_dataloaders(
 
     for i, tokens in enumerate(test_df["tokens"]):
         test_data[i, torch.arange(len(tokens)), tokens] = 1.0
+
+    # Overfit to a single batch if specified
+    if overfit_to_a_single_batch:
+        train_data = train_data[:batch_size]
+        test_data = test_data[:batch_size]
 
     # Turn them into tensor datasets
     train_data = TensorDataset(train_data)

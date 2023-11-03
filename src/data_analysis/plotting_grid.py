@@ -19,20 +19,24 @@ if __name__ == "__main__":
 
     # Load the model
     model = VAESelfies(
-        dataset_name="zinc_250k",
-        max_token_length=70,
+        dataset_name="TINY-CID-SELFIES-20",
+        max_token_length=20,
         latent_dim=2,
         device=torch.device("mps" if torch.backends.mps.is_available() else "cpu"),
     )
     model.load_state_dict(
         torch.load(
-            ROOT_DIR / "data" / "trained_models" / "vae_on_zinc_250k_latent_dim_2.pt"
+            ROOT_DIR
+            / "data"
+            / "trained_models"
+            / "VAESelfies_TINY-CID-SELFIES-20_latent_dim_2.pt"
         )
     )
     model.eval()
 
     # Plotting a grid in latent space.
-    model.plot_grid(ax=ax)
+    x_lims = y_lims = (-3, 3)
+    model.plot_grid(x_lims=x_lims, y_lims=y_lims, ax=ax)
     ax.axis("off")
 
     plt.show()

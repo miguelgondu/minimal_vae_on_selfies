@@ -82,4 +82,9 @@ if __name__ == "__main__":
         device=torch.device("mps" if torch.backends.mps.is_available() else "cpu"),
     )
 
-    train_model(model, max_epochs=100, batch_size=256, overfit_to_a_single_batch=True)
+    train_model(
+        model,
+        max_epochs=1000,
+        batch_size=64,
+        overfit_to_a_single_batch=True,
+    )

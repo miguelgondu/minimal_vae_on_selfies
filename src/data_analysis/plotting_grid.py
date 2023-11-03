@@ -35,7 +35,7 @@ if __name__ == "__main__":
     model.eval()
 
     # Plotting a grid in latent space.
-    x_lims = y_lims = (-3, 3)
+    x_lims = y_lims = (-5, 5)
     model.plot_grid(x_lims=x_lims, y_lims=y_lims, ax=ax)
     ax.axis("off")
 
